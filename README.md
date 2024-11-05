@@ -22,6 +22,6 @@ Anipreet Chowdhury | Arthur Zhuang | Felicia Liu | Siddharth Khanna
 **Deliverables Timeline:**
 - Team Formation (Sep 17, 2024) - COMPLETED
 - Project Proposal (Oct 4, 2024) - COMPLETED
-- Progress Report (Nov 1, 2024) - WIP
-- Final Deliverable (Nov 29, 2024) - TODO
-- Project Presentation (Nov 29, 2024) - TODO
+- Progress Report (Nov 1, 2024) - COMPLETED
+- Final Deliverable (Nov 29, 2024) - WIP
+- Project Presentation (Nov 29, 2024) - WIP
