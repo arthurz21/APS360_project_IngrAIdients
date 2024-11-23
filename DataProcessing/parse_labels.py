@@ -108,9 +108,22 @@ def ingredient_identifier(string):
     return ingredient.strip()
 
 
+# for the webscraped version it's already cleaned
+def ingredient_identifier_web(string):
+    # clean once more and return
+    string = re.sub(r'\d+', '', string)
+    string = re.sub(r'\(.*?\)|/|\d+', '', string).strip()
+    string = re.sub(r'\(.*?\)|/|\d+|-', '', string)
+    
+    # Replace 'arlic' with 'garlic'
+    string = string.replace('garlic', 'arlic')
+    string = string.replace('arlic', 'garlic')
+    return string.strip()
+
+
 # parses through the full json and returns a dictionary with ID keys and
 # values are lists with unique ingredients that have been cleaned
-def parse_ingredients(json_file):
+def parse_ingredients(json_file, webscraped=False):
 
     # open and extract data from the file
     with open(json_file, 'r') as file:
@@ -122,11 +135,13 @@ def parse_ingredients(json_file):
     # for each recipe/entry, get its ingredient list
     for entry in data:
         recipe_id = entry.get("id", "NO_ID")
-        ingredients = [ingredient_identifier(item["text"]) for item in entry.get("ingredients", [])]
+        if webscraped:
+            ingredients = [ingredient_identifier_web(item["text"]) for item in entry.get("ingredients", [])]
+        else:
+            ingredients = [ingredient_identifier(item["text"]) for item in entry.get("ingredients", [])]
         results[recipe_id] = list(set(ingredients))
 
     return results
-
 
 
 
@@ -333,6 +348,34 @@ def custom_round(value, threshold=0.8):
         return int(value)
 
 
+def create_ingredient_variant_matching():
+
+    lines = [
+        "agent1 (4337)", "agent2 (4337)", "allium (5320)", "berries (4501)", 
+        "butter1 (3601)", "butter2 (3601)", "butter3 (3601)", "butter4 (3600)", 
+        "cheese (5127)", "chocolate (4310)", "cinnamon (4819)", "condiment (6017)", 
+        "cream1 (3526)", "cream2 (3526)", "dried fruit, jams, snacks, treats (4397)", 
+        "fats (5831)", "flour1 (3426)", "flour2 (3426)", "flour3 (3426)", "flour4 (3425)", 
+        "fruit (4674)", "juice1 (4282)", "juice2 (4281)", "liquids (3586)", 
+        "meat and substitutes (5767)", "milk1 (3582)", "milk2 (3582)", "milk3 (3581)", 
+        "nightshade (4732)", "nut1 (4253)", "nut2 (4253)", "oil1 (3571)", 
+        "oil2 (3571)", "oil3 (3571)", "pepper1 (4416)", "pepper2 (4416)", 
+        "powder1 (4323)", "powder2 (4323)", "root vegetable (4135)", "sauce (4987)", 
+        "seasoning1 (4026)", "seasoning2 (4026)", "seed (6145)", "starches (5408)", 
+        "syrup1 (4373)", "syrup2 (4372)", "syrup3 (4372)", "vegetable (4603)", 
+        "vinegar (4866)", "water1 (4265)", "water2 (4264)", "water3 (4264)", 
+        "wheat product (4735)"
+    ]
+    print(len(lines))
+    variant_dict = {}
+    for line in lines:
+        match = re.match(r"([\w\s,']+?)\d*\s*\(\d+\)", line.strip())
+        if match:
+            base_word = match.group(1).strip()
+            variant_dict.setdefault(base_word, []).append(re.sub(r"\s*\(.*?\)", "", line).strip())
+    return variant_dict
+
+
 #################################################
 # FILTERING FUNCTIONS
 #################################################
@@ -417,6 +460,22 @@ def balance_ingredients(ingredient_dict):
         balanced_ingredient_dict[key] = list(set(balanced_ingredients))
     return balanced_ingredient_dict
 
+# turns flour into flour1 flour2 flour3 flour4
+def balance_ingredients_with_known(ingredients_dict, ingredient_mapping):
+    # replace all 
+    balanced_ingredient_dict = {}
+    ingredient_variant_counts = Counter()
+    for key, ingredients in ingredients_dict.items():
+        balanced_ingredients = []
+        for ingredient in ingredients:
+            # use variants cyclically if the ingredient has been split
+            variants = ingredient_mapping[ingredient]
+            current_variant = variants[ingredient_variant_counts[ingredient] % len(variants)]
+            balanced_ingredients.append(current_variant)
+            ingredient_variant_counts[ingredient] += 1
+        balanced_ingredient_dict[key] = list(set(balanced_ingredients))
+    return balanced_ingredient_dict
+
 
 # you may specifiy a string and all those ingredients will be removed entirely
 def removing_heavys(ingredients_dict, heavy):
@@ -455,66 +514,145 @@ def read_all_files(main_folder):
     return ingredients_dict
 
 
+# # for each valid file ID, write that ingredient list of data to a TXT file call ID.txt
+# def write_all_files(ingredients_dict, valid_ids, main_folder):
+#     os.makedirs(main_folder, exist_ok=True)
+#     for key_id, ingredients in ingredients_dict.items():
+#         if key_id in valid_ids:
+#             file_path = os.path.join(main_folder, f"{key_id}.txt")
+#             with open(file_path, "w") as f:
+#                 for ingredient in ingredients:
+#                     f.write(f"{ingredient}\n")
+#     return
+
 # for each valid file ID, write that ingredient list of data to a TXT file call ID.txt
-def write_all_files(ingredients_dict, valid_ids, main_folder):
+def write_all_files_web(ingredients_dict, main_folder):
     os.makedirs(main_folder, exist_ok=True)
     for key_id, ingredients in ingredients_dict.items():
-        if key_id in valid_ids:
-            file_path = os.path.join(main_folder, f"{key_id}.txt")
-            with open(file_path, "w") as f:
-                for ingredient in ingredients:
-                    f.write(f"{ingredient}\n")
+        file_path = os.path.join(main_folder, f"{key_id}.txt")
+        with open(file_path, "w") as f:
+            for ingredient in ingredients:
+                f.write(f"{ingredient}\n")
     return
 
 
+# writes the list of valid current IDs after all my processing
+def write_dict_keys_to_file(ingredients_dict, file_path):
+    try:
+        with open(file_path, 'w') as file:
+            for key in ingredients_dict.keys():
+                file.write(f"{key}\n")
+        print(f"Keys written to {file_path} successfully.")
+    except Exception as e:
+        print(f"An error occurred: {e}")
+
+
+# #################################################
+# # MAIN
+# #################################################
+
+# json_file = "/Users/felicialiu/Desktop/APS360/Project Guidelines/dev/recipes_with_nutritional_info.json"
+# valid_ids_file = "/Users/felicialiu/Desktop/APS360/Project Guidelines/dev/valid_recipe_ids.txt"
+# main_folder = "/Users/felicialiu/Desktop/APS360/Project Guidelines/new_unsplit/default"
+# remapping_file = "/Users/felicialiu/Desktop/APS360/Project Guidelines/dev/remapped.txt"
+
+
+# # same always, open the json, extract IDs and ingredient lists
+# ingredients_dict = parse_ingredients(json_file)
+
+# # from given file that corresponds to recipes with images
+# # remove those without images
+# valid_ids = extract_valid_ids_into_set(valid_ids_file)
+# ingredients_dict = make_valid(ingredients_dict, valid_ids_file)
+
+# # from given file that changes word correspondences
+# # remap 375 ingredient catagories into only 32
+# word_map = create_mapping(remapping_file)
+# ingredients_dict = remap(ingredients_dict, word_map)
+
+# # define heavy ingredients and remove them entirely
+# heavys = "salt sugar"
+# ingredients_dict = removing_heavys(ingredients_dict, heavys)
+
+# # balance still heavy ingredients with the lower numbers
+# ingredients_dict = balance_ingredients(ingredients_dict)
+
+# # print(len(ingredients_dict['fffb3bbff2']), ingredients_dict['fffb3bbff2'])
+
+
+# ###############
+# # UNUSED BALANCING
+
+# # # use to choose a good number for cutoff rare_ingredients_filtering
+# # numbers_cut_vs_ingredients_remaining(ingredients_dict)
+
+# # filter ingredients out if they are too obscure/rare
+# # ingredients_dict, _ = rare_ingredients_filtering(ingredients_dict, cutoff=[50, 200])
+
+# # # filter out recipes that have too few ingredients
+# # ingredients_dict = too_few_ingredients_recipe_filtering(ingredients_dict, cutoff=[2, 9])
+# ###############
+
+# # run full analysis
+# # rarity(ingredients_dict)
+# # generate_ingredient_report(ingredients_dict)
+# # analyze_ingredients(ingredients_dict)
+
+# # once analysis looks good generate the folder of all ingredient lists
+# # then divide into training testing cohorts
+# # write_all_files(ingredients_dict, valid_ids, main_folder)
+
+# # write all valid ids after processing
+# new_valid_keys = "/Users/felicialiu/Desktop/APS360/Project Guidelines/dev/new_valid_keys.txt"
+# write_dict_keys_to_file(ingredients_dict, new_valid_keys)
+
+
+
+
+# ###############
+# # UNUSED TESTING
+
+# # for key_id, ingredients in ingredients_dict.items():
+# #     if len(ingredients) == 1:
+# #         print(key_id, ":", ingredients)
+# # print(len(valid_ids), len(ingredients_dict.keys()))
+
+# # modi = "test"
+# # main_folder = '/Users/felicialiu/Desktop/APS360/Project Guidelines/LABELS/{}'.format(modi)
+# # ingredients_dict = read_all_files(main_folder)
+# # generate_ingredient_report(ingredients_dict, modi)
+# # analyze_ingredients(ingredients_dict, modi)
+
+# ###############
+
 
 
 
 #################################################
-# MAIN
+# WEBSCRAPING
 #################################################
 
-json_file = "/Users/felicialiu/Desktop/APS360/Project Guidelines/dev/recipes_with_nutritional_info.json"
-valid_ids_file = "/Users/felicialiu/Desktop/APS360/Project Guidelines/dev/valid_recipe_ids.txt"
+json_file = "/Users/felicialiu/Desktop/APS360/Project Guidelines/dev/processed_recipe_data.json"
 main_folder = "/Users/felicialiu/Desktop/APS360/Project Guidelines/new_unsplit/default"
-remapping_file = "/Users/felicialiu/Desktop/APS360/Project Guidelines/dev/remapped.txt"
+remapping_file = "/Users/felicialiu/Desktop/APS360/Project Guidelines/dev/remapped_web.txt"
 
 
 # same always, open the json, extract IDs and ingredient lists
-ingredients_dict = parse_ingredients(json_file)
-
-# from given file that corresponds to recipes with images
-# remove those without images
-valid_ids = extract_valid_ids_into_set(valid_ids_file)
-ingredients_dict = make_valid(ingredients_dict, valid_ids_file)
+ingredients_dict = parse_ingredients(json_file, webscraped=True)
 
 # from given file that changes word correspondences
-# remap 375 ingredient catagories into only 32
+# remap 1350 ingredient catagories into only 32
 word_map = create_mapping(remapping_file)
 ingredients_dict = remap(ingredients_dict, word_map)
 
 # define heavy ingredients and remove them entirely
-heavys = "salt sugar"
+heavys = "salt sugar weird"
 ingredients_dict = removing_heavys(ingredients_dict, heavys)
 
 # balance still heavy ingredients with the lower numbers
-ingredients_dict = balance_ingredients(ingredients_dict)
+ingredient_mapping = create_ingredient_variant_matching()
 
-print(len(ingredients_dict['fffb3bbff2']), ingredients_dict['fffb3bbff2'])
-
-
-###############
-# UNUSED BALANCING
-
-# # use to choose a good number for cutoff rare_ingredients_filtering
-# numbers_cut_vs_ingredients_remaining(ingredients_dict)
-
-# filter ingredients out if they are too obscure/rare
-# ingredients_dict, _ = rare_ingredients_filtering(ingredients_dict, cutoff=[50, 200])
-
-# # filter out recipes that have too few ingredients
-# ingredients_dict = too_few_ingredients_recipe_filtering(ingredients_dict, cutoff=[2, 9])
-###############
+ingredients_dict = balance_ingredients_with_known(ingredients_dict, ingredient_mapping)
 
 # run full analysis
 rarity(ingredients_dict)
@@ -523,21 +661,8 @@ analyze_ingredients(ingredients_dict)
 
 # once analysis looks good generate the folder of all ingredient lists
 # then divide into training testing cohorts
-write_all_files(ingredients_dict, valid_ids, main_folder)
+write_all_files_web(ingredients_dict, main_folder)
 
-
-###############
-# UNUSED TESTING
-
-# for key_id, ingredients in ingredients_dict.items():
-#     if len(ingredients) == 1:
-#         print(key_id, ":", ingredients)
-# print(len(valid_ids), len(ingredients_dict.keys()))
-
-# modi = "test"
-# main_folder = '/Users/felicialiu/Desktop/APS360/Project Guidelines/LABELS/{}'.format(modi)
-# ingredients_dict = read_all_files(main_folder)
-# generate_ingredient_report(ingredients_dict, modi)
-# analyze_ingredients(ingredients_dict, modi)
-
-###############
+# write all valid ids after processing
+# new_valid_keys = "/Users/felicialiu/Desktop/APS360/Project Guidelines/dev/new_valid_keys.txt"
+# write_dict_keys_to_file(ingredients_dict, new_valid_keys)
