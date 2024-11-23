@@ -11,12 +11,12 @@ import numpy as np
 import string
 from collections import defaultdict
 import matplotlib.ticker as ticker
-
-
+from collections import Counter, defaultdict
+import math
 
 
 #################################################
-# FUNCTIONS
+# FORM AND EDITING THE DICTIONARY
 #################################################
 
 # takes in a text string (e.g. "yogurt, greek, plain, nonfat") and returns a
@@ -102,6 +102,8 @@ def ingredient_identifier(string):
     if ingredient == "regular margarine":
         ingredient = "margarine"
 
+    # ingredient = parts[0]
+
     # clean once more and return
     return ingredient.strip()
 
@@ -125,6 +127,12 @@ def parse_ingredients(json_file):
 
     return results
 
+
+
+
+#################################################
+# GENERATING STATS AND PLOTS
+#################################################
 
 # generates top 10 bot 10 ingredient counts, full alphabetical ingredient list with counts
 # and a bar plot with alphabetical entries and corressponding counts
@@ -159,6 +167,10 @@ def generate_ingredient_report(ingredients_dict, modifier=""):
         f.write("\nTop 10 Least Common Ingredients:\n")
         bottom_10 = sorted_by_count[-10:]
         for ingredient, count in bottom_10:
+            f.write(f"{ingredient} ({count})\n")
+        # for all the ingredients give their counts
+        f.write("\n********************\nALL INGREDIENTS SORTED BY COUNT:\n")
+        for ingredient, count in sorted_by_count:
             f.write(f"{ingredient} ({count})\n")
 
     # setup for the histogram plotting, ingredients and colour bars
@@ -196,42 +208,13 @@ def generate_ingredient_report(ingredients_dict, modifier=""):
     return
 
 
-# this is to filter out while we're writing the files to make sure only recipes with ingredient
-# lists and at least one image are used
-def extract_valid_ids_into_set(valid_ids_file):
-    valid_ids = set() 
-    with open(valid_ids_file, "r") as f:
-        for line in f:
-            id_str = line.strip() 
-            if id_str: valid_ids.add(id_str)
-    return valid_ids
-
-
-# for each valid file ID, write that ingredient list of data to a TXT file call ID.txt
-def write_all_files(ingredients_dict, valid_ids, main_folder):
-    os.makedirs(main_folder, exist_ok=True)
-    for key_id, ingredients in ingredients_dict.items():
-        if key_id in valid_ids:
-            file_path = os.path.join(main_folder, f"{key_id}.txt")
-            with open(file_path, "w") as f:
-                for ingredient in ingredients:
-                    f.write(f"{ingredient}\n")
-    return
-
-
-def make_valid(ingredients_dict, valid_ids_file):
-    new_dict = {}
-    for key_id, ingredients in ingredients_dict.items():
-        if key_id in valid_ids:
-            new_dict[key_id] = ingredients
-    return new_dict
-
-
+# plotting function that creates mean median mode stats, longest shortest recipe, and num ingredients per recipe
 def analyze_ingredients(ingredients_dict, modifier=""):
     # count the number of ingredients for each recipe
     ingredients_count = [len(ingredients) for ingredients in ingredients_dict.values()]
     # calculate statistics
     total_recipes = len(ingredients_count)
+    total_ingredients = sum(ingredients_count)
     avg_ingredients = sum(ingredients_count) / total_recipes if total_recipes > 0 else 0
     min_ingredients = min(ingredients_count) if ingredients_count else 0
     max_ingredients = max(ingredients_count) if ingredients_count else 0
@@ -243,6 +226,7 @@ def analyze_ingredients(ingredients_dict, modifier=""):
     
     # PRINT GENERAL STATS
     print(f"Total Recipes: {total_recipes}")
+    print(f"Total Ingredients: {total_ingredients}")
     print(f"Average Ingredients per Recipe: {avg_ingredients:.2f}")
     print(f"Shortest Recipe Length [{len(shortest_recipe)}] (ID: {shortest_recipe_id}): {shortest_recipe}")
     print(f"Longest Recipe Length [{len(longest_recipe)}] (ID: {longest_recipe_id}): {longest_recipe}")
@@ -267,6 +251,191 @@ def analyze_ingredients(ingredients_dict, modifier=""):
     plt.close()
 
 
+# makes a plot to show what would happen by varying the number of cutoffs
+def numbers_cut_vs_ingredients_remaining(ingredients_dict):
+    cutoffs = np.linspace(0, 1000, 21, dtype=int)
+    number_kept = []
+    for cutoff in cutoffs:
+        _, kept_ingredients = rare_ingredients_filtering(ingredients_dict, cutoff=cutoff)
+        number_kept.append(len(kept_ingredients))
+    number_kept = np.array(number_kept)
+
+    # plt.scatter(cutoffs, number_kept)
+    # plt.xlabel("cutoff number")
+    # plt.ylabel("remaining # unique ingredients")
+    # plt.show()
+
+
+# plots the rarity plot
+def rarity(ingredients_dict):
+
+    # dictionary to store ingredient counts by ingredient name
+    ingredient_counts = defaultdict(int)
+    for ingredient_list in ingredients_dict.values():
+        for ingredient in ingredient_list:
+            key = ingredient.lower()
+            ingredient_counts[key] += 1
+    # sort ingredients by their counts in descending order
+    sorted_by_count = sorted(ingredient_counts.items(), key=lambda x: x[1], reverse=True)
+    # print(sorted_by_count)
+
+    # plotting the distribution of ingredients per recipe
+    ingredient_freq = []
+    for ingredient, count in sorted_by_count:
+        ingredient_freq.append(count)
+
+    # create the histogram
+    plt.hist(ingredient_freq, bins=100, edgecolor='black')
+    plt.title('Rarity of Ingredients Distribution')
+    plt.xlabel('Count of Ingredients in Full Dataset')
+    plt.ylabel('Frequency of that Count')
+    plt.grid(axis='y', alpha=0.25)
+    plt.savefig("rarity.png")
+    plt.close()
+
+
+
+#################################################
+# HELPER FILTERING FUNCTIONS
+#################################################
+
+
+# this is to filter out while we're writing the files to make sure only recipes with ingredient
+# lists and at least one image are used
+def extract_valid_ids_into_set(valid_ids_file):
+    valid_ids = set() 
+    with open(valid_ids_file, "r") as f:
+        for line in f:
+            id_str = line.strip() 
+            if id_str: valid_ids.add(id_str)
+    return valid_ids
+
+
+# create a dictionary of remapping words for remapping all catagories into 32
+def create_mapping(file_path):
+    mapping = {}
+    with open(file_path, 'r') as file:
+        for line in file:
+            if "||" in line:
+                parts = line.split("||")
+                name = parts[0].strip()
+                category = parts[1].strip()
+                name = re.sub(r'\s?\(\d+\)', '', name)
+                mapping[name] = category
+    return mapping
+
+
+# rounds by a different threshold
+def custom_round(value, threshold=0.8):
+    if value - int(value) >= threshold:
+        return int(value) + 1
+    else:
+        return int(value)
+
+
+#################################################
+# FILTERING FUNCTIONS
+#################################################
+
+
+# takes out recipes that don't have images 
+def make_valid(ingredients_dict, valid_ids_file):
+    new_dict = {}
+    for key_id, ingredients in ingredients_dict.items():
+        if key_id in valid_ids:
+            new_dict[key_id] = ingredients
+    return new_dict
+
+# filter the 375 classes to 32 classes by remapping scheme
+def remap(ingredients_dict, word_map):
+    new_dict = {}
+    for key_id, ingredients in ingredients_dict.items():
+        new_dict[key_id] = list(set([word_map[ingr] for ingr in ingredients]))
+    return new_dict
+
+# takes out recipes that have too many or few ingredients
+def too_few_ingredients_recipe_filtering(ingredients_dict, cutoff=[4, 12]):
+    new_dict = {}
+    for key_id, ingredients in ingredients_dict.items():
+        if len(ingredients) >= cutoff[0] and len(ingredients) <= cutoff[1]:
+            new_dict[key_id] = ingredients
+    return new_dict
+
+# takes out ingredients from all dictionaries if the ingredient is too rare or common
+def rare_ingredients_filtering(ingredients_dict, cutoff=[0, 1000]):
+    # dictionary to store ingredient counts by ingredient name
+    ingredient_counts = defaultdict(int)
+    for ingredient_list in ingredients_dict.values():
+        for ingredient in ingredient_list:
+            key = ingredient.lower()
+            ingredient_counts[key] += 1
+    # sort ingredients by their counts in descending order
+    sorted_by_count = sorted(ingredient_counts.items(), key=lambda x: x[1], reverse=True)
+    # create a set of kept ingredients
+    kept_ingredients = set()
+    for ingredient, count in sorted_by_count:
+        if count >= cutoff[0] and count<cutoff[1]:
+            kept_ingredients.add(ingredient)
+    # now in a new dictionary, remove any ingredients that are not in the set
+    new_dict = {}
+    for key_id, ingredients in ingredients_dict.items():
+        fixed_ingredients = [ingred for ingred in ingredients if ingred in kept_ingredients]
+        if len(fixed_ingredients)!= 0:  
+            new_dict[key_id] = fixed_ingredients
+    return new_dict, kept_ingredients
+
+
+# turns flour into flour1 flour2 flour3 flour4
+def balance_ingredients(ingredient_dict):
+    # get all ingredient counts
+    ingredient_counts = Counter()
+    for ingredients in ingredient_dict.values():
+        ingredient_counts.update(ingredients)
+    # find the actual mind
+    min_frequency = min(ingredient_counts.values())
+    # for all ingredients figure out how many it should be remapped to
+    ingredient_mapping = defaultdict(list)
+    for ingredient, count in ingredient_counts.items():
+        num_variants = custom_round(count/min_frequency, threshold=0.8)
+        # print(ingredient, num_variants, count/min_frequency)
+        if num_variants > 1:
+            for i in range(1, num_variants + 1):
+                ingredient_mapping[ingredient].append(f"{ingredient}{i}")
+        else:
+            ingredient_mapping[ingredient].append(ingredient)
+    # replace all 
+    balanced_ingredient_dict = {}
+    ingredient_variant_counts = Counter()
+    for key, ingredients in ingredient_dict.items():
+        balanced_ingredients = []
+        for ingredient in ingredients:
+            # use variants cyclically if the ingredient has been split
+            variants = ingredient_mapping[ingredient]
+            current_variant = variants[ingredient_variant_counts[ingredient] % len(variants)]
+            balanced_ingredients.append(current_variant)
+            ingredient_variant_counts[ingredient] += 1
+        balanced_ingredient_dict[key] = list(set(balanced_ingredients))
+    return balanced_ingredient_dict
+
+
+# you may specifiy a string and all those ingredients will be removed entirely
+def removing_heavys(ingredients_dict, heavy):
+    updated_dict = {}
+    for recipe, ingredients in ingredients_dict.items():
+        updated_ingredients = [ingredient for ingredient in ingredients if ingredient not in heavy]
+        if len(updated_ingredients) != 0:
+            updated_dict[recipe] = updated_ingredients
+    return updated_dict
+
+
+
+
+
+#################################################
+# WRITE THE FINAL INGREDIENTS FOR CNN
+#################################################
+
+# recreates dictionary of ingredients from unsplit folder (or training val test folders)
 def read_all_files(main_folder):
     ingredients_dict = {}
     
@@ -286,37 +455,89 @@ def read_all_files(main_folder):
     return ingredients_dict
 
 
+# for each valid file ID, write that ingredient list of data to a TXT file call ID.txt
+def write_all_files(ingredients_dict, valid_ids, main_folder):
+    os.makedirs(main_folder, exist_ok=True)
+    for key_id, ingredients in ingredients_dict.items():
+        if key_id in valid_ids:
+            file_path = os.path.join(main_folder, f"{key_id}.txt")
+            with open(file_path, "w") as f:
+                for ingredient in ingredients:
+                    f.write(f"{ingredient}\n")
+    return
+
+
+
+
+
 #################################################
 # MAIN
 #################################################
 
-
-
 json_file = "/Users/felicialiu/Desktop/APS360/Project Guidelines/dev/recipes_with_nutritional_info.json"
 valid_ids_file = "/Users/felicialiu/Desktop/APS360/Project Guidelines/dev/valid_recipe_ids.txt"
 main_folder = "/Users/felicialiu/Desktop/APS360/Project Guidelines/new_unsplit/default"
+remapping_file = "/Users/felicialiu/Desktop/APS360/Project Guidelines/dev/remapped.txt"
 
+
+# same always, open the json, extract IDs and ingredient lists
 ingredients_dict = parse_ingredients(json_file)
-valid_ids = extract_valid_ids_into_set(valid_ids_file)
 
+# from given file that corresponds to recipes with images
+# remove those without images
+valid_ids = extract_valid_ids_into_set(valid_ids_file)
 ingredients_dict = make_valid(ingredients_dict, valid_ids_file)
+
+# from given file that changes word correspondences
+# remap 375 ingredient catagories into only 32
+word_map = create_mapping(remapping_file)
+ingredients_dict = remap(ingredients_dict, word_map)
+
+# define heavy ingredients and remove them entirely
+heavys = "salt sugar"
+ingredients_dict = removing_heavys(ingredients_dict, heavys)
+
+# balance still heavy ingredients with the lower numbers
+ingredients_dict = balance_ingredients(ingredients_dict)
+
+print(len(ingredients_dict['fffb3bbff2']), ingredients_dict['fffb3bbff2'])
+
+
+###############
+# UNUSED BALANCING
+
+# # use to choose a good number for cutoff rare_ingredients_filtering
+# numbers_cut_vs_ingredients_remaining(ingredients_dict)
+
+# filter ingredients out if they are too obscure/rare
+# ingredients_dict, _ = rare_ingredients_filtering(ingredients_dict, cutoff=[50, 200])
+
+# # filter out recipes that have too few ingredients
+# ingredients_dict = too_few_ingredients_recipe_filtering(ingredients_dict, cutoff=[2, 9])
+###############
+
+# run full analysis
+rarity(ingredients_dict)
+generate_ingredient_report(ingredients_dict)
+analyze_ingredients(ingredients_dict)
+
+# once analysis looks good generate the folder of all ingredient lists
+# then divide into training testing cohorts
+write_all_files(ingredients_dict, valid_ids, main_folder)
+
+
+###############
+# UNUSED TESTING
 
 # for key_id, ingredients in ingredients_dict.items():
 #     if len(ingredients) == 1:
 #         print(key_id, ":", ingredients)
-
-generate_ingredient_report(ingredients_dict)
-analyze_ingredients(ingredients_dict)
-
-
 # print(len(valid_ids), len(ingredients_dict.keys()))
-
-write_all_files(ingredients_dict, valid_ids, main_folder)
-
-
 
 # modi = "test"
 # main_folder = '/Users/felicialiu/Desktop/APS360/Project Guidelines/LABELS/{}'.format(modi)
 # ingredients_dict = read_all_files(main_folder)
 # generate_ingredient_report(ingredients_dict, modi)
 # analyze_ingredients(ingredients_dict, modi)
+
+###############

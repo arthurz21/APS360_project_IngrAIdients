@@ -1,0 +1,388 @@
+olive oil (8202)               || oil
+corn oil (1224)                || oil
+canola oil (943)               || oil
+sesame oil (632)               || oil
+safflower oil (63)             || oil
+
+rice (1702)                    || starches
+cornstarch (1595)              || starches
+degermed cornmeal (655)        || starches
+soft pretzels (306)            || starches
+italian seasoned breadcrumbs delallo (244) || starches
+uncooked quinoa (151)          || starches
+dry bread crumbs (146)         || starches
+egg noodles (132)              || starches
+pancakes (125)                 || starches
+dry couscous (124)             || starches
+steam meal kashi (83)          || starches
+wild rice (82)                 || starches
+tortilla chips (41)            || starches
+phyllo dough (40)              || starches
+tapioca starch (36)            || starches
+pizza dough (36)               || starches
+croutons (30)                  || starches
+japanese noodles (17)          || starches
+hash browns (52)               || starches
+
+wheat flour (12227)            || flour
+bread wheat flours (1857)      || flour
+rice flour (202)               || flour
+carob flour (48)               || flour
+chickpea flour (23)            || flour
+refined sorghum flour (8)      || flour
+buttermilk biscuit mix (73)    || flour
+unenriched semolina (102)      || flour
+
+crude wheat germ (422)         || wheat product
+vital wheat gluten (130)       || wheat product
+durum wheat (16)               || wheat product
+hulled barley (109)            || wheat product
+dry bulgur (45)                || wheat product
+oats cereals (1075)            || wheat product
+granola cereals (106)          || wheat product
+quaker cereals (5)             || wheat product
+oats (3245)                    || wheat product
+oat bran (138)                 || wheat product
+
+walnuts (1997)                 || nut
+nutmeg (1634)                  || nut
+cashew nuts (439)              || nut
+hazelnuts or filberts (268)    || nut
+pistachio nuts (266)           || nut
+pine nuts (214)                || nut
+macadamia nuts (143)           || nut
+chestnuts (39)                 || nut
+almonds (2524)                 || nut
+pecans (1891)                  || nut
+
+parmesan cheese (2958)         || cheese
+cheddar cheese (1282)          || cheese
+blue cheese (307)              || cheese
+cottage cheese (278)           || cheese
+feta cheese (196)              || cheese
+mozzarella cheese (191)        || cheese
+ricotta cheese (117)           || cheese
+goat cheese (98)               || cheese
+pasteurized process cheese (42) || cheese
+mascarpone cheese (41)         || cheese
+gruyere cheese (38)            || cheese
+neufchatel cheese (31)         || cheese
+brie cheese (29)               || cheese
+roquefort cheese (19)          || cheese
+provolone cheese (17)          || cheese
+fontina cheese (16)            || cheese
+gouda cheese (13)              || cheese
+
+milk (8004)                    || milk
+canned milk (483)              || milk
+original and vanilla soymilk (298) || milk
+almond milk beverages (239)    || milk
+buttermilk milk (1941)         || milk
+eggnog (47)                    || milk
+
+cream (1984)                   || cream
+sour cream (1673)              || cream
+whipped cream (1586)           || cream
+greek yogurt (1998)            || cream
+vanilla yogurt (87)            || cream
+
+unsalted butter (14194)        || butter
+salted butter (221)            || butter
+
+smooth style peanut butter (2018) || fats
+sesame butter (107)            || fats
+coconut or palm shortening (1890) || fats
+margarine (1200)               || fats
+lard (164)                     || fats
+goose fat (7)                  || fats
+vegetable shortening (786)     || fats
+bacon grease (12)              || fats
+
+granulated sugars (16362)      || sugar
+brown sugars (6353)            || sugar
+powdered sugars (1840)         || sugar
+sugar free syrups (76)         || sugar
+palm sugar (11)                || sugar
+goldsaft sugar beet syrup (7)  || sugar
+
+maple syrup (1981)             || syrup
+corn syrups (1567)             || syrup
+syrup sweetener (453)          || syrup
+grenadine syrups (138)         || syrup
+cane syrup (17)                || syrup
+honey (4784)                   || syrup
+molasses (831)                 || syrup
+stevia leaf sweetener (160)    || syrup
+unsweetened pectin (69)        || syrup
+vanilla extract (5136)         || syrup
+
+semi-sweet chocolate baking chips (3248) || chocolate
+bitter-sweet dark chocolate chips (474) || chocolate
+semisweet chocolate (385)      || chocolate
+mini semi-sweet chocolate baking chips (135) || chocolate
+dark chocolate (107)           || chocolate
+white chocolate (100)          || chocolate
+mars snackfood us baking chocolate (39) || chocolate
+dark chocolate coated coffee beans (9) || chocolate
+
+popcorn (491)                  || dried fruit, jams, snacks, treats
+tapioca puddings (7)           || dried fruit, jams, snacks, treats
+marshmallows (672)             || dried fruit, jams, snacks, treats
+caramels (129)                 || dried fruit, jams, snacks, treats
+dulce de leche (19)            || dried fruit, jams, snacks, treats
+nestle candies (11)            || dried fruit, jams, snacks, treats
+vanilla ice cream (600)        || dried fruit, jams, snacks, treats
+strawberry ice cream (44)      || dried fruit, jams, snacks, treats
+chocolate ice cream (81)       || dried fruit, jams, snacks, treats
+toffee (6)                     || dried fruit, jams, snacks, treats
+vanilla wafers cookies (81)    || dried fruit, jams, snacks, treats
+graham crackers cookies (57)   || dried fruit, jams, snacks, treats
+orange sherbet (128)           || dried fruit, jams, snacks, treats
+deglet noor dates (458)        || dried fruit, jams, snacks, treats
+dried figs (132)               || dried fruit, jams, snacks, treats
+dried apricots (614)           || dried fruit, jams, snacks, treats
+orange marmalade (190)         || dried fruit, jams, snacks, treats
+canned mango nectar (430)      || dried fruit, jams, snacks, treats
+apricot jams and preserves (322) || dried fruit, jams, snacks, treats
+dried goji berries (274)       || dried fruit, jams, snacks, treats
+
+
+baking powder (3550)           || agent
+baking soda (3259)             || agent
+yeast (3086)                   || agent
+xanthan gum (31)               || agent
+
+garlic powder (5165)           || powder
+dry powder cocoa (1721)        || powder
+onion powder (1303)            || powder
+chili powder (1142)            || powder
+powder egg substitute (634)    || powder
+curry powder (446)             || powder
+protein powder (200)           || powder
+five spice powder wei-chuan (41) || powder
+
+table salt (21287)             || salt
+
+pepper (8832)                  || pepper
+
+cinnamon (4819)                || cinnamon
+
+paprika (1791)                 || seasoning
+fresh parsley (1235)           || seasoning
+oregano (1224)                 || seasoning
+basil (1223)                   || seasoning
+thyme (1159)                   || seasoning
+fresh dill weed (757)          || seasoning
+cloves (719)                   || seasoning
+rosemary (644)                 || seasoning
+chives (491)                   || seasoning
+parsley (352)                  || seasoning
+tarragon (255)                 || seasoning
+saffron (76)                   || seasoning
+ginger root (69)               || seasoning
+fresh peppermint (48)          || seasoning
+all purpose cajun seasoning (96) || seasoning
+dry seasoning mix (82)         || seasoning
+steak seasoning (36)           || seasoning
+creole seasoning (27)          || seasoning
+cardamom (316)                 || seasoning
+turmeric (137)                 || seasoning
+marjoram (130)                 || seasoning
+organic chipotle dried chile peppers terra dolce (60) || seasoning
+bay leaf (21)                  || seasoning
+pumpkin pie spice (23)         || seasoning
+miso (96)                      || seasoning
+root wasabi (80)               || seasoning
+
+soy sauce (1851)               || sauce
+worcestershire sauce (1253)    || sauce
+canned applesauce (612)        || sauce
+barbecue sauce (360)           || sauce
+ready-to-serve sauce (306)     || sauce
+salsa sauce (256)              || sauce
+canned tomato sauce (204)      || sauce
+fish sauce (163)               || sauce
+hoisin sauce (111)             || sauce
+hot chile sauce (106)          || sauce
+teriyaki sauce (97)            || sauce
+canned cranberry sauce (89)    || sauce
+pesto sauce (85)               || sauce
+oyster sauce (71)              || sauce
+peppers sauce (60)             || sauce
+pasta sauce (30)               || sauce
+garlic chili sauce (29)        || sauce
+spicy buffalo sauce (4)        || sauce
+
+distilled vinegar (1561)       || vinegar
+cider vinegar (1175)           || vinegar
+red wine vinegar (912)         || vinegar
+balsamic vinegar (734)         || vinegar
+rice vinegar (391)             || vinegar
+seasoned rice wine vinegar (171) || vinegar
+
+mustard (3234)                 || condiment
+mayonnaise (2265)              || condiment
+ketchup (1015)                 || condiment
+sweet pickle relish (218)      || condiment
+italian dressing (270)         || condiment
+ranch dressing (194)           || condiment
+balsamic vinaigrette dressing marketside (59) || condiment
+caesar dressing (12)           || condiment
+
+fresh pork (864)               || meat and substitutes
+link/patty pork sausage (175)  || meat and substitutes
+crab crustaceans (88)          || meat and substitutes
+scallop mollusks (62)          || meat and substitutes
+cod (51)                       || meat and substitutes
+halibut (38)                   || meat and substitutes
+polish kielbasa (37)           || meat and substitutes
+catfish (23)                   || meat and substitutes
+tilapia (23)                   || meat and substitutes
+shrimp crustaceans (317)       || meat and substitutes
+ground turkey (278)            || meat and substitutes
+salmon (252)                   || meat and substitutes
+chicken broth (38)             || meat and substitutes
+liver chicken (4)              || meat and substitutes
+grass-fed beef (922)           || meat and substitutes
+flank beef (79)                || meat and substitutes
+beef and pork pepperoni (19)   || meat and substitutes
+rib eye steak beef (9)         || meat and substitutes
+broiler or fryers chicken (1560) || meat and substitutes
+egg (204)                      || meat and substitutes
+tofu (299)                     || meat and substitutes
+meatless bacon (624)           || meat and substitutes
+meatless meatballs (19)        || meat and substitutes
+
+distilled alcoholic beverage (1281) || liquids
+beer alcoholic beverage (291)  || liquids
+carbonated beverages (283)     || liquids
+ovaltine beverages (92)        || liquids
+liqueur alcoholic beverage (36) || liquids
+tequila (102)                  || liquids
+frozen concentrate lemonade (178) || liquids
+frozen concentrate limeade (26) || liquids
+chicken broth or bouillon soup (1121) || liquids
+cream of chicken soup (146)    || liquids
+vegetable broth soup (119)     || liquids
+beef broth or bouillon canned soup (106) || liquids
+indian bean masala smart soup (1) || liquids
+
+
+bottled water (12772)          || water
+sparkling mineral water (22)   || water
+
+
+lemon juice (4371)             || juice
+orange juice (2395)            || juice
+lime juice (1153)              || juice
+canned or bottled pineapple juice (593) || juice
+canned or bottled apple juice (540) || juice
+unsweetened cranberry juice (286) || juice
+bottled pomegranate juice (125) || juice
+grapefruit juice (124)         || juice
+passion-fruit juice (25)       || juice
+
+
+
+strawberries (1475)            || berries
+dried cranberries (1215)       || berries
+blueberries (1099)             || berries
+raspberries (706)              || berries
+blackberries (340)             || berries
+zante currants (139)           || berries
+
+
+pears (156)                    || fruit
+apples (1306)                  || fruit
+pineapple (598)                || fruit
+peaches (510)                  || fruit
+watermelon (251)               || fruit
+plums (192)                    || fruit
+bananas (428)                  || fruit
+sweet cherries (836)           || fruit
+red or green grapes (501)      || fruit
+cantaloupe melons (102)        || fruit
+papayas (77)                   || fruit
+honeydew melons (63)           || fruit
+nectarines (35)                || fruit
+tangerines (33)                || fruit
+kumquats (12)                  || fruit
+tamarinds (37)                 || fruit
+
+
+seeded raisins (1794)          || seed
+cumin seed (1335)              || seed
+coriander seed (915)           || seed
+sesame seeds (899)             || seed
+flaxseed (656)                 || seed
+sunflower seed kernels (563)   || seed
+pumpkin and squash seeds (449) || seed
+poppy seed (254)               || seed
+caraway seed (225)             || seed
+fennel seed (189)              || seed
+chia seeds (142)               || seed
+anise seed (89)                || seed
+mature seeds chickpeas (76)    || seed
+hemp seed (34)                 || seed
+fenugreek seed (23)            || seed
+
+
+onions (3207)                  || allium
+spring or scallions onions (915) || allium
+fresh red onions (489)         || allium
+shallots (292)                 || allium
+leeks (68)                     || allium
+celery (1113)                  || allium
+
+
+carrots (1323)                 || root vegetable
+parsnips (69)                  || root vegetable
+turnips (40)                   || root vegetable
+radishes (94)                  || root vegetable
+beets (143)                    || root vegetable
+ginger (2201)                  || root vegetable
+horseradish (524)              || root vegetable
+
+potatoes (1517)                || nightshade
+sweet corn (853)               || nightshade
+tomatoes (814)                 || nightshade
+canned tomato products (35)    || nightshade
+sun-dried tomatoes (127)       || nightshade
+sweet peppers (536)            || nightshade
+pumpkin (526)                  || nightshade
+sweet potato (390)             || nightshade
+ancho peppers (1)              || nightshade
+jalapeno peppers (188)         || nightshade
+summer squash (211)            || nightshade
+
+
+spinach (486)                  || vegetable
+cabbage (374)                  || vegetable
+cos or romaine lettuce (148)   || vegetable
+brussels sprouts (185)         || vegetable
+arugula (66)                   || vegetable
+kale (64)                      || vegetable
+radicchio (13)                 || vegetable
+broccoli (449)                 || vegetable
+asparagus (335)                || vegetable
+cucumber pickles (287)         || vegetable
+coleslaw (66)                  || vegetable
+mushrooms (466)                || vegetable
+cauliflower (164)              || vegetable
+ripe olives (204)              || vegetable
+canned capers (107)            || vegetable
+winter squash (97)             || vegetable
+artichokes (88)                || vegetable
+avocados (66)                  || vegetable
+canned sauerkraut (54)         || vegetable
+bulb fennel (27)               || vegetable
+okara (27)                     || vegetable
+shiitake mushrooms (20)        || vegetable
+portabella mushrooms (15)      || vegetable
+okra (47)                      || vegetable
+snap beans (916)               || vegetable
+kidney beans (67)              || vegetable
+adzuki beans (17)              || vegetable
+frozen edamame (45)            || vegetable
+lentils (87)                   || vegetable
+green peas (251)               || vegetable
